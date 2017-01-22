@@ -33,7 +33,7 @@ func (v MarshalPresence) String() string {
 	case OmitEmpty:
 		return "omitempty"
 	default:
-		return fmt.Sprintf("MarshalPresence(%v)", v)
+		return fmt.Sprintf("MarshalPresence(%v)", int(v))
 	}
 }
 

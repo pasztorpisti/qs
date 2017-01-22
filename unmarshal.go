@@ -47,7 +47,7 @@ func (v UnmarshalPresence) String() string {
 	case Req:
 		return "Req"
 	default:
-		return fmt.Sprintf("UnmarshalPresence(%v)", v)
+		return fmt.Sprintf("UnmarshalPresence(%v)", int(v))
 	}
 }
 
