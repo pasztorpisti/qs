@@ -11,7 +11,8 @@ so this package can be used for that as well.
 # Quick Intro
 
 The go standard library can convert only between the (query) string and the
-standard `url.Values` data type (which is a `map[string][]string`).
+standard [`url.Values` data type](https://golang.org/pkg/net/url/#Values)
+(which is a `map[string][]string`).
 This `qs` package adds struct marshaling and unmarshaling to your arsenal:
 
 ```
@@ -39,14 +40,14 @@ package main
 import "fmt"
 import "github.com/pasztorpisti/qs"
 
-func main() {
-	type Query struct {
-		Search     string
-		Page       int
-		PageSize   int
-		Categories []string `qs:"category"`
-	}
+type Query struct {
+	Search     string
+	Page       int
+	PageSize   int
+	Categories []string `qs:"category"`
+}
 
+func main() {
 	queryStr, err := qs.Marshal(&Query{
 		Search:     "my search",
 		Page:       2,
@@ -69,8 +70,9 @@ func main() {
 
 - Support for standard types and: pointer, slice, array, map, struct.
 - A custom type can implement the `MarshalQS` and/or `UnmarshalQS` interfaces
-  to handle its own marshaling/unmarshaling.
-- The marshaler and unmarshaler are modular and can be extended to support new types.
+  to [handle its own marshaling/unmarshaling](https://godoc.org/github.com/pasztorpisti/qs/#example-package--SelfMarshalingType).
+- The marshaler and unmarshaler are modular and
+  [can be extended to support new types](https://godoc.org/github.com/pasztorpisti/qs/#example-package--CustomMarshalerFactory).
   This makes it possible to do several tricks. One of them is being able to
   override existing type marshalers (e.g.: the `[]byte` array marshaler).
 - It can tell whether a type is marshallable before actually marshaling an
@@ -87,7 +89,8 @@ func main() {
     in case of query strings.
   - When a struct field tag specifies none of the  `keepempty` and `omitempty`
     options the marshaler uses `keepempty` by default. By creating a custom
-    marshaler you can change this default.
+    marshaler you can
+    [change the default to `omitempty`](https://godoc.org/github.com/pasztorpisti/qs/#example-package--DefaultOmitEmpty).
   - When a struct field tag doesn't specify any of the `opt`, `nil`, `req`
     options the unmarshaler uses `opt` by default. By creating a custom
     unmarshaler you can change this default.
@@ -96,3 +99,8 @@ func main() {
   - Set custom name for the field in the marshaled query string.
   - Set one of the `keepempty`, `omitempty` options for marshaling.
   - Set one of the `opt`, `nil`, `req` options for unmarshaling.
+
+# Detailed Documentation
+
+The [godoc of the qs package](https://godoc.org/github.com/pasztorpisti/qs/)
+contains more detailed documentation with working examples.
