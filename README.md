@@ -1,5 +1,8 @@
 # qs
 
+[![build-status](https://travis-ci.org/pasztorpisti/qs.svg?branch=master)](https://travis-ci.org/pasztorpisti/qs)
+[![godoc](https://godoc.org/github.com/pasztorpisti/qs?status.svg)](https://godoc.org/github.com/pasztorpisti/qs)
+
 The `qs` package can marshal and unmarshal structs into/from url query strings.
 The interface of `qs` is very similar to that of some standard marshaler
 packages like `encoding/json`, `encoding/xml`.
