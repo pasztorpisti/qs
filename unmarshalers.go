@@ -303,7 +303,7 @@ func unmarshalString(v reflect.Value, s string, opts *UnmarshalOptions) error {
 // underlying type (kind) of bool.
 func unmarshalBool(v reflect.Value, s string, opts *UnmarshalOptions) error {
 	if v.Kind() != reflect.Bool {
-		return &wrongKindError{Expected: reflect.Struct, Actual: v.Type()}
+		return &wrongKindError{Expected: reflect.Bool, Actual: v.Type()}
 	}
 	b, err := strconv.ParseBool(s)
 	if err != nil {

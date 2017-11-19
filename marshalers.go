@@ -281,7 +281,7 @@ func marshalString(v reflect.Value, opts *MarshalOptions) (string, error) {
 
 func marshalBool(v reflect.Value, opts *MarshalOptions) (string, error) {
 	if v.Kind() != reflect.Bool {
-		return "", &wrongKindError{Expected: reflect.Struct, Actual: v.Type()}
+		return "", &wrongKindError{Expected: reflect.Bool, Actual: v.Type()}
 	}
 	return strconv.FormatBool(v.Bool()), nil
 }
