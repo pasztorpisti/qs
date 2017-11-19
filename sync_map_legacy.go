@@ -6,12 +6,16 @@ import "sync"
 
 func newSyncMap() syncMap {
 	return syncMap{
-		m: make(map[interface{}]interface{}),
+		mu: &sync.RWMutex{},
+		m:  make(map[interface{}]interface{}),
 	}
 }
 
 type syncMap struct {
-	mu sync.RWMutex
+	// mu is a pointer only to satisfy `go vet` for go1.6 and older.
+	// Without a pointer `go vet` fails with:
+	// "newSyncMap returns lock by value: qs.syncMap contains sync.RWMutex"
+	mu *sync.RWMutex
 	m  map[interface{}]interface{}
 }
 
