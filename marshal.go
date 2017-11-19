@@ -225,12 +225,17 @@ func prepareMarshalOptions(opts MarshalOptions) *MarshalOptions {
 	if opts.NameTransformer == nil {
 		opts.NameTransformer = DefaultNameTransform
 	}
+
 	if opts.ValuesMarshalerFactory == nil {
 		opts.ValuesMarshalerFactory = DefaultValuesMarshalerFactory
 	}
+	opts.ValuesMarshalerFactory = newValuesMarshalerCache(opts.ValuesMarshalerFactory)
+
 	if opts.MarshalerFactory == nil {
 		opts.MarshalerFactory = DefaultMarshalerFactory
 	}
+	opts.MarshalerFactory = newMarshalerCache(opts.MarshalerFactory)
+
 	if opts.DefaultMarshalPresence == MPUnspecified {
 		if DefaultMarshalPresence == MPUnspecified {
 			opts.DefaultMarshalPresence = KeepEmpty

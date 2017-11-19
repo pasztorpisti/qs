@@ -232,12 +232,17 @@ func prepareUnmarshalOptions(opts UnmarshalOptions) *UnmarshalOptions {
 	if opts.SliceToString == nil {
 		opts.SliceToString = DefaultSliceToString
 	}
+
 	if opts.ValuesUnmarshalerFactory == nil {
 		opts.ValuesUnmarshalerFactory = DefaultValuesUnmarshalerFactory
 	}
+	opts.ValuesUnmarshalerFactory = newValuesUnmarshalerCache(opts.ValuesUnmarshalerFactory)
+
 	if opts.UnmarshalerFactory == nil {
 		opts.UnmarshalerFactory = DefaultUnmarshalerFactory
 	}
+	opts.UnmarshalerFactory = newUnmarshalerCache(opts.UnmarshalerFactory)
+
 	if opts.DefaultUnmarshalPresence == UPUnspecified {
 		if DefaultUnmarshalPresence == UPUnspecified {
 			opts.DefaultUnmarshalPresence = Opt
