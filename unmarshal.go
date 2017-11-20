@@ -85,30 +85,36 @@ type UnmarshalOptions struct {
 	DefaultUnmarshalPresence UnmarshalPresence
 }
 
-// DefaultSliceToString is used by the NewUnmarshaler function when
+// NewDefaultUnmarshalOptions creates a new UnmarshalOptions in which every field
+// is set to its default value.
+func NewDefaultUnmarshalOptions() *UnmarshalOptions {
+	return prepareUnmarshalOptions(UnmarshalOptions{})
+}
+
+// defaultSliceToString is used by the NewUnmarshaler function when
 // its UnmarshalOptions.SliceToString parameter is nil.
-var DefaultSliceToString = func(a []string) (string, error) {
+var defaultSliceToString = func(a []string) (string, error) {
 	if len(a) != 1 {
 		return "", fmt.Errorf("SliceToString expects array length == 1. array=%v", a)
 	}
 	return a[0], nil
 }
 
-// DefaultValuesUnmarshalerFactory is used by the NewUnmarshaler function when
+// defaultValuesUnmarshalerFactory is used by the NewUnmarshaler function when
 // its UnmarshalOptions.ValuesUnmarshalerFactory parameter is nil.
-var DefaultValuesUnmarshalerFactory = newValuesUnmarshalerFactory()
+var defaultValuesUnmarshalerFactory = newValuesUnmarshalerFactory()
 
-// DefaultUnmarshalerFactory is used by the NewUnmarshaler function when its
+// defaultUnmarshalerFactory is used by the NewUnmarshaler function when its
 // UnmarshalOptions.UnmarshalerFactory parameter is nil. This variable is set
 // to a factory object that handles most builtin types (arrays, pointers,
 // bool, int, etc...). If a type implements the UnmarshalQS interface then this
 // factory returns an unmarshaler object that allows instances of the given type
 // to unmarshal themselves.
-var DefaultUnmarshalerFactory = newUnmarshalerFactory()
+var defaultUnmarshalerFactory = newUnmarshalerFactory()
 
-// DefaultUnmarshalPresence is used by the NewUnmarshaler function when its
+// defaultUnmarshalPresence is used by the NewUnmarshaler function when its
 // UnmarshalOptions.DefaultUnmarshalPresence parameter is UPUnspecified.
-var DefaultUnmarshalPresence = Opt
+const defaultUnmarshalPresence = Opt
 
 // DefaultUnmarshaler is the unmarshaler used by the Unmarshal, UnmarshalValues,
 // CanUnmarshal and CanUnmarshalType functions.
@@ -230,25 +236,21 @@ func prepareUnmarshalOptions(opts UnmarshalOptions) *UnmarshalOptions {
 		opts.NameTransformer = DefaultNameTransform
 	}
 	if opts.SliceToString == nil {
-		opts.SliceToString = DefaultSliceToString
+		opts.SliceToString = defaultSliceToString
 	}
 
 	if opts.ValuesUnmarshalerFactory == nil {
-		opts.ValuesUnmarshalerFactory = DefaultValuesUnmarshalerFactory
+		opts.ValuesUnmarshalerFactory = defaultValuesUnmarshalerFactory
 	}
 	opts.ValuesUnmarshalerFactory = newValuesUnmarshalerCache(opts.ValuesUnmarshalerFactory)
 
 	if opts.UnmarshalerFactory == nil {
-		opts.UnmarshalerFactory = DefaultUnmarshalerFactory
+		opts.UnmarshalerFactory = defaultUnmarshalerFactory
 	}
 	opts.UnmarshalerFactory = newUnmarshalerCache(opts.UnmarshalerFactory)
 
 	if opts.DefaultUnmarshalPresence == UPUnspecified {
-		if DefaultUnmarshalPresence == UPUnspecified {
-			opts.DefaultUnmarshalPresence = Opt
-		} else {
-			opts.DefaultUnmarshalPresence = DefaultUnmarshalPresence
-		}
+		opts.DefaultUnmarshalPresence = defaultUnmarshalPresence
 	}
 	return &opts
 }

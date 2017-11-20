@@ -24,10 +24,10 @@ import (
 // to create custom QSMarshaler and QSUnmarshaler with custom factories for them.
 func Example_customMarshalerFactory() {
 	customMarshaler := qs.NewMarshaler(&qs.MarshalOptions{
-		MarshalerFactory: &marshalerFactory{qs.DefaultMarshalerFactory},
+		MarshalerFactory: &marshalerFactory{qs.NewDefaultMarshalOptions().MarshalerFactory},
 	})
 	customUnmarshaler := qs.NewUnmarshaler(&qs.UnmarshalOptions{
-		UnmarshalerFactory: &unmarshalerFactory{qs.DefaultUnmarshalerFactory},
+		UnmarshalerFactory: &unmarshalerFactory{qs.NewDefaultUnmarshalOptions().UnmarshalerFactory},
 	})
 
 	performSliceTest("Default", qs.DefaultMarshaler, qs.DefaultUnmarshaler)

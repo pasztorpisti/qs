@@ -62,21 +62,27 @@ type MarshalOptions struct {
 	DefaultMarshalPresence MarshalPresence
 }
 
-// DefaultValuesMarshalerFactory is used by the NewMarshaler function when its
-// MarshalOptions.ValuesMarshalerFactory parameter is nil.
-var DefaultValuesMarshalerFactory = newValuesMarshalerFactory()
+// NewDefaultMarshalOptions creates a new MarshalOptions in which every field
+// is set to its default value.
+func NewDefaultMarshalOptions() *MarshalOptions {
+	return prepareMarshalOptions(MarshalOptions{})
+}
 
-// DefaultMarshalerFactory is used by the NewMarshaler function when its
+// defaultValuesMarshalerFactory is used by the NewMarshaler function when its
+// MarshalOptions.ValuesMarshalerFactory parameter is nil.
+var defaultValuesMarshalerFactory = newValuesMarshalerFactory()
+
+// defaultMarshalerFactory is used by the NewMarshaler function when its
 // MarshalOptions.MarshalerFactory parameter is nil. This variable is set
 // to a factory object that handles most builtin types (arrays, pointers,
 // bool, int, etc...). If a type implements the MarshalQS interface then this
 // factory returns an marshaler object that allows instances of the given type
 // to marshal themselves.
-var DefaultMarshalerFactory = newMarshalerFactory()
+var defaultMarshalerFactory = newMarshalerFactory()
 
-// DefaultMarshalPresence is used by the NewMarshaler function when its
+// defaultMarshalPresence is used by the NewMarshaler function when its
 // MarshalOptions.DefaultMarshalPresence parameter is MPUnspecified.
-var DefaultMarshalPresence = KeepEmpty
+const defaultMarshalPresence = KeepEmpty
 
 // DefaultMarshaler is the marshaler used by the Marshal, MarshalValues,
 // CanMarshal and CanMarshalType functions.
@@ -227,21 +233,17 @@ func prepareMarshalOptions(opts MarshalOptions) *MarshalOptions {
 	}
 
 	if opts.ValuesMarshalerFactory == nil {
-		opts.ValuesMarshalerFactory = DefaultValuesMarshalerFactory
+		opts.ValuesMarshalerFactory = defaultValuesMarshalerFactory
 	}
 	opts.ValuesMarshalerFactory = newValuesMarshalerCache(opts.ValuesMarshalerFactory)
 
 	if opts.MarshalerFactory == nil {
-		opts.MarshalerFactory = DefaultMarshalerFactory
+		opts.MarshalerFactory = defaultMarshalerFactory
 	}
 	opts.MarshalerFactory = newMarshalerCache(opts.MarshalerFactory)
 
 	if opts.DefaultMarshalPresence == MPUnspecified {
-		if DefaultMarshalPresence == MPUnspecified {
-			opts.DefaultMarshalPresence = KeepEmpty
-		} else {
-			opts.DefaultMarshalPresence = DefaultMarshalPresence
-		}
+		opts.DefaultMarshalPresence = defaultMarshalPresence
 	}
 	return &opts
 }
