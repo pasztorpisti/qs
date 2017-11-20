@@ -62,28 +62,6 @@ type MarshalOptions struct {
 	DefaultMarshalPresence MarshalPresence
 }
 
-// NewDefaultMarshalOptions creates a new MarshalOptions in which every field
-// is set to its default value.
-func NewDefaultMarshalOptions() *MarshalOptions {
-	return prepareMarshalOptions(MarshalOptions{})
-}
-
-// defaultValuesMarshalerFactory is used by the NewMarshaler function when its
-// MarshalOptions.ValuesMarshalerFactory parameter is nil.
-var defaultValuesMarshalerFactory = newValuesMarshalerFactory()
-
-// defaultMarshalerFactory is used by the NewMarshaler function when its
-// MarshalOptions.MarshalerFactory parameter is nil. This variable is set
-// to a factory object that handles most builtin types (arrays, pointers,
-// bool, int, etc...). If a type implements the MarshalQS interface then this
-// factory returns an marshaler object that allows instances of the given type
-// to marshal themselves.
-var defaultMarshalerFactory = newMarshalerFactory()
-
-// defaultMarshalPresence is used by the NewMarshaler function when its
-// MarshalOptions.DefaultMarshalPresence parameter is MPUnspecified.
-const defaultMarshalPresence = KeepEmpty
-
 // DefaultMarshaler is the marshaler used by the Marshal, MarshalValues,
 // CanMarshal and CanMarshalType functions.
 var DefaultMarshaler = NewMarshaler(&MarshalOptions{})
@@ -226,6 +204,28 @@ func (p *QSMarshaler) CheckMarshalType(t reflect.Type) error {
 	_, err := p.opts.ValuesMarshalerFactory.ValuesMarshaler(t, p.opts)
 	return err
 }
+
+// NewDefaultMarshalOptions creates a new MarshalOptions in which every field
+// is set to its default value.
+func NewDefaultMarshalOptions() *MarshalOptions {
+	return prepareMarshalOptions(MarshalOptions{})
+}
+
+// defaultValuesMarshalerFactory is used by the NewMarshaler function when its
+// MarshalOptions.ValuesMarshalerFactory parameter is nil.
+var defaultValuesMarshalerFactory = newValuesMarshalerFactory()
+
+// defaultMarshalerFactory is used by the NewMarshaler function when its
+// MarshalOptions.MarshalerFactory parameter is nil. This variable is set
+// to a factory object that handles most builtin types (arrays, pointers,
+// bool, int, etc...). If a type implements the MarshalQS interface then this
+// factory returns an marshaler object that allows instances of the given type
+// to marshal themselves.
+var defaultMarshalerFactory = newMarshalerFactory()
+
+// defaultMarshalPresence is used by the NewMarshaler function when its
+// MarshalOptions.DefaultMarshalPresence parameter is MPUnspecified.
+const defaultMarshalPresence = KeepEmpty
 
 func prepareMarshalOptions(opts MarshalOptions) *MarshalOptions {
 	if opts.NameTransformer == nil {

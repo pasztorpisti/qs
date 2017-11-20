@@ -85,37 +85,6 @@ type UnmarshalOptions struct {
 	DefaultUnmarshalPresence UnmarshalPresence
 }
 
-// NewDefaultUnmarshalOptions creates a new UnmarshalOptions in which every field
-// is set to its default value.
-func NewDefaultUnmarshalOptions() *UnmarshalOptions {
-	return prepareUnmarshalOptions(UnmarshalOptions{})
-}
-
-// defaultSliceToString is used by the NewUnmarshaler function when
-// its UnmarshalOptions.SliceToString parameter is nil.
-var defaultSliceToString = func(a []string) (string, error) {
-	if len(a) != 1 {
-		return "", fmt.Errorf("SliceToString expects array length == 1. array=%v", a)
-	}
-	return a[0], nil
-}
-
-// defaultValuesUnmarshalerFactory is used by the NewUnmarshaler function when
-// its UnmarshalOptions.ValuesUnmarshalerFactory parameter is nil.
-var defaultValuesUnmarshalerFactory = newValuesUnmarshalerFactory()
-
-// defaultUnmarshalerFactory is used by the NewUnmarshaler function when its
-// UnmarshalOptions.UnmarshalerFactory parameter is nil. This variable is set
-// to a factory object that handles most builtin types (arrays, pointers,
-// bool, int, etc...). If a type implements the UnmarshalQS interface then this
-// factory returns an unmarshaler object that allows instances of the given type
-// to unmarshal themselves.
-var defaultUnmarshalerFactory = newUnmarshalerFactory()
-
-// defaultUnmarshalPresence is used by the NewUnmarshaler function when its
-// UnmarshalOptions.DefaultUnmarshalPresence parameter is UPUnspecified.
-const defaultUnmarshalPresence = Opt
-
 // DefaultUnmarshaler is the unmarshaler used by the Unmarshal, UnmarshalValues,
 // CanUnmarshal and CanUnmarshalType functions.
 var DefaultUnmarshaler = NewUnmarshaler(&UnmarshalOptions{})
@@ -230,6 +199,37 @@ func (p *QSUnmarshaler) CheckUnmarshalType(t reflect.Type) error {
 	_, err := p.opts.ValuesUnmarshalerFactory.ValuesUnmarshaler(t.Elem(), p.opts)
 	return err
 }
+
+// NewDefaultUnmarshalOptions creates a new UnmarshalOptions in which every field
+// is set to its default value.
+func NewDefaultUnmarshalOptions() *UnmarshalOptions {
+	return prepareUnmarshalOptions(UnmarshalOptions{})
+}
+
+// defaultSliceToString is used by the NewUnmarshaler function when
+// its UnmarshalOptions.SliceToString parameter is nil.
+var defaultSliceToString = func(a []string) (string, error) {
+	if len(a) != 1 {
+		return "", fmt.Errorf("SliceToString expects array length == 1. array=%v", a)
+	}
+	return a[0], nil
+}
+
+// defaultValuesUnmarshalerFactory is used by the NewUnmarshaler function when
+// its UnmarshalOptions.ValuesUnmarshalerFactory parameter is nil.
+var defaultValuesUnmarshalerFactory = newValuesUnmarshalerFactory()
+
+// defaultUnmarshalerFactory is used by the NewUnmarshaler function when its
+// UnmarshalOptions.UnmarshalerFactory parameter is nil. This variable is set
+// to a factory object that handles most builtin types (arrays, pointers,
+// bool, int, etc...). If a type implements the UnmarshalQS interface then this
+// factory returns an unmarshaler object that allows instances of the given type
+// to unmarshal themselves.
+var defaultUnmarshalerFactory = newUnmarshalerFactory()
+
+// defaultUnmarshalPresence is used by the NewUnmarshaler function when its
+// UnmarshalOptions.DefaultUnmarshalPresence parameter is UPUnspecified.
+const defaultUnmarshalPresence = Opt
 
 func prepareUnmarshalOptions(opts UnmarshalOptions) *UnmarshalOptions {
 	if opts.NameTransformer == nil {
