@@ -71,7 +71,8 @@ func main() {
 
 # Features
 
-- Support for standard types and: pointer, slice, array, map, struct.
+- Support for primitive types (`bool`, `int`, etc...), pointers, slices, arrays,
+  maps, structs, `time.Time` and `url.URL`.
 - A custom type can implement the `MarshalQS` and/or `UnmarshalQS` interfaces
   to [handle its own marshaling/unmarshaling](https://godoc.org/github.com/pasztorpisti/qs/#example-package--SelfMarshalingType).
 - The marshaler and unmarshaler are modular and
@@ -98,7 +99,8 @@ func main() {
     options the unmarshaler uses `opt` by default. By creating a custom
     unmarshaler you can change this default.
 - A struct field tag can be used to:
-  - Exclude a field from marshaling/unmarshaling by specifying `"-"` as the name.
+  - Exclude a field from marshaling/unmarshaling by specifying `-` as the
+    field name (`qs:"-"`).
   - Set custom name for the field in the marshaled query string.
   - Set one of the `keepempty`, `omitempty` options for marshaling.
   - Set one of the `opt`, `nil`, `req` options for unmarshaling.
