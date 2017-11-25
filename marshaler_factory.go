@@ -53,6 +53,10 @@ func newValuesMarshalerFactory() ValuesMarshalerFactory {
 
 func newMarshalerFactory() MarshalerFactory {
 	return &marshalerFactory{
+		Types: map[reflect.Type]Marshaler{
+			timeType: primitiveMarshalerFunc(marshalTime),
+			urlType:  primitiveMarshalerFunc(marshalURL),
+		},
 		KindSubRegistries: map[reflect.Kind]MarshalerFactory{
 			reflect.Ptr:   marshalerFactoryFunc(newPtrMarshaler),
 			reflect.Array: marshalerFactoryFunc(newArrayAndSliceMarshaler),

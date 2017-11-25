@@ -62,6 +62,10 @@ func newValuesUnmarshalerFactory() ValuesUnmarshalerFactory {
 
 func newUnmarshalerFactory() UnmarshalerFactory {
 	return &unmarshalerFactory{
+		Types: map[reflect.Type]Unmarshaler{
+			timeType: primitiveUnmarshalerFunc(unmarshalTime),
+			urlType:  primitiveUnmarshalerFunc(unmarshalURL),
+		},
 		KindSubRegistries: map[reflect.Kind]UnmarshalerFactory{
 			reflect.Ptr:   unmarshalerFactoryFunc(newPtrUnmarshaler),
 			reflect.Array: unmarshalerFactoryFunc(newArrayUnmarshaler),
@@ -103,6 +107,7 @@ func (p *valuesUnmarshalerFactory) ValuesUnmarshaler(t reflect.Type, opts *Unmar
 
 // unmarshalerFactory implements the UnmarshalerFactory interface.
 type unmarshalerFactory struct {
+	Types             map[reflect.Type]Unmarshaler
 	KindSubRegistries map[reflect.Kind]UnmarshalerFactory
 	Kinds             map[reflect.Kind]Unmarshaler
 }
@@ -110,6 +115,10 @@ type unmarshalerFactory struct {
 var unmarshalQSInterfaceType = reflect.TypeOf((*UnmarshalQS)(nil)).Elem()
 
 func (p *unmarshalerFactory) Unmarshaler(t reflect.Type, opts *UnmarshalOptions) (Unmarshaler, error) {
+	if unmarshaler, ok := p.Types[t]; ok {
+		return unmarshaler, nil
+	}
+
 	if reflect.PtrTo(t).Implements(unmarshalQSInterfaceType) {
 		return unmarshalerFunc(unmarshalWithUnmarshalQS), nil
 	}

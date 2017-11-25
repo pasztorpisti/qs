@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 // MQSBytes implements the MarshalQS interface.
@@ -47,6 +48,9 @@ type MTypes struct {
 
 	F32 float32
 	F64 float64
+
+	Time time.Time
+	URL  url.URL
 
 	Ptr    *int
 	Ptr2   *int
@@ -181,6 +185,12 @@ func expectValues(values, expected url.Values) error {
 
 // TestMarshalTypes tests the marshaling of all supported types.
 func TestMarshalTypes(t *testing.T) {
+	tm := time.Date(2017, 2, 25, 10, 59, 3, 999, time.UTC)
+	u, err := url.Parse("https://host.uk/path1/path2?key1=val1&key2=val2#fragment")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	var i int = 42
 	vs, err := MarshalValues(&MTypes{
 		S:      "str",
@@ -198,6 +208,8 @@ func TestMarshalTypes(t *testing.T) {
 		U64:    64,
 		F32:    32.32,
 		F64:    64.64,
+		Time:   tm,
+		URL:    *u,
 		Ptr:    &i,
 		Ptr2:   nil,
 		Array:  [2]int{1, 2},
@@ -211,34 +223,35 @@ func TestMarshalTypes(t *testing.T) {
 		},
 	})
 	if err != nil {
+		t.Fatal(err)
+	}
+	expected := url.Values{
+		"s":     {"str"},
+		"b":     {"true"},
+		"b2":    {"false"},
+		"i":     {"-1"},
+		"i8":    {"-8"},
+		"i16":   {"-16"},
+		"i32":   {"-32"},
+		"i64":   {"-64"},
+		"u":     {"1"},
+		"u8":    {"8"},
+		"u16":   {"16"},
+		"u32":   {"32"},
+		"u64":   {"64"},
+		"f32":   {"32.32"},
+		"f64":   {"64.64"},
+		"time":  {"2017-02-25T10:59:03Z"},
+		"url":   {"https://host.uk/path1/path2?key1=val1&key2=val2#fragment"},
+		"ptr":   {"42"},
+		"array": {"1", "2"},
+		"slice": {"3", "4"},
+		"qs":    {"010203"},
+		"qs2":   {""},
+		"ei":    {"33"},
+	}
+	if err := expectValues(vs, expected); err != nil {
 		t.Error(err)
-	} else {
-		expected := url.Values{
-			"s":     {"str"},
-			"b":     {"true"},
-			"b2":    {"false"},
-			"i":     {"-1"},
-			"i8":    {"-8"},
-			"i16":   {"-16"},
-			"i32":   {"-32"},
-			"i64":   {"-64"},
-			"u":     {"1"},
-			"u8":    {"8"},
-			"u16":   {"16"},
-			"u32":   {"32"},
-			"u64":   {"64"},
-			"f32":   {"32.32"},
-			"f64":   {"64.64"},
-			"ptr":   {"42"},
-			"array": {"1", "2"},
-			"slice": {"3", "4"},
-			"qs":    {"010203"},
-			"qs2":   {""},
-			"ei":    {"33"},
-		}
-		if err := expectValues(vs, expected); err != nil {
-			t.Error(err)
-		}
 	}
 }
 

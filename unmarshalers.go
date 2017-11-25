@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 // structUnmarshaler implements ValuesUnmarshaler.
@@ -387,6 +388,34 @@ func unmarshalFloat(v reflect.Value, s string, opts *UnmarshalOptions) error {
 	}
 
 	v.SetFloat(f)
+	return nil
+}
+
+func unmarshalTime(v reflect.Value, s string, opts *UnmarshalOptions) error {
+	t := v.Type()
+	if t != timeType {
+		return &wrongTypeError{Actual: t, Expected: timeType}
+	}
+
+	tm, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		return err
+	}
+	v.Set(reflect.ValueOf(tm))
+	return nil
+}
+
+func unmarshalURL(v reflect.Value, s string, opts *UnmarshalOptions) error {
+	t := v.Type()
+	if t != urlType {
+		return &wrongTypeError{Actual: t, Expected: urlType}
+	}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		return err
+	}
+	v.Set(reflect.ValueOf(*u))
 	return nil
 }
 

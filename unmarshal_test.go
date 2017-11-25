@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 // UQSBytes implements the MarshalQS interface.
@@ -63,6 +64,9 @@ type UTypes struct {
 
 	F32 float32
 	F64 float64
+
+	Time time.Time
+	URL  url.URL
 
 	Ptr    *int
 	Ptr2   *int
@@ -270,6 +274,8 @@ func TestUnmarshalTypes(t *testing.T) {
 		"i=-1&i8=-8&i16=-16&i32=-32&i64=-64",
 		"u=1&u8=8&u16=16&u32=32&u64=64",
 		"f32=32.32&f64=64.64",
+		"time=2017-02-25T10:59:03Z",
+		"url=https://host.uk/path1/path2?key1=val1%26key2=val2%23fragment",
 		"ptr=42",
 		"array=1&array=2",
 		"slice=3&slice=4",
@@ -277,38 +283,46 @@ func TestUnmarshalTypes(t *testing.T) {
 		"ei=33",
 	}, "&")
 
-	var us UTypes
-	err := Unmarshal(&us, queryString)
+	tm := time.Date(2017, 2, 25, 10, 59, 3, 0, time.UTC)
+	u, err := url.Parse("https://host.uk/path1/path2?key1=val1&key2=val2#fragment")
 	if err != nil {
+		t.Fatal(err)
+	}
+
+	var us UTypes
+	err = Unmarshal(&us, queryString)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var cr comparisonResults
+	cr.compare("s", us.S, "str")
+	cr.compare("b", us.B, true)
+	cr.compare("b2", us.B2, false)
+	cr.compare("i", us.I, -1)
+	cr.compare("i8", us.I8, int8(-8))
+	cr.compare("i16", us.I16, int16(-16))
+	cr.compare("i32", us.I32, int32(-32))
+	cr.compare("i64", us.I64, int64(-64))
+	cr.compare("u", us.U, uint(1))
+	cr.compare("u8", us.U8, uint8(8))
+	cr.compare("u16", us.U16, uint16(16))
+	cr.compare("u32", us.U32, uint32(32))
+	cr.compare("u64", us.U64, uint64(64))
+	cr.compare("f32", us.F32, float32(32.32))
+	cr.compare("f64", us.F64, 64.64)
+	cr.compare("time", us.Time, tm)
+	cr.compare("url", us.URL.String(), u.String())
+	cr.compare("ptr", us.Ptr, 42)
+	cr.compare("ptr2", us.Ptr2, 0)
+	cr.compare("array", us.Array, []int{1, 2})
+	cr.compare("slice", us.Slice, []int{3, 4})
+	cr.compare("slice2", us.Slice2, []int{})
+	cr.compare("qs", us.QS, []byte{1, 2, 3})
+	cr.compare("qs2", us.QS2, []int{})
+	cr.compare("ei", us.EI, 33)
+	if err := cr.finish(); err != nil {
 		t.Error(err)
-	} else {
-		var cr comparisonResults
-		cr.compare("s", us.S, "str")
-		cr.compare("b", us.B, true)
-		cr.compare("b2", us.B2, false)
-		cr.compare("i", us.I, -1)
-		cr.compare("i8", us.I8, int8(-8))
-		cr.compare("i16", us.I16, int16(-16))
-		cr.compare("i32", us.I32, int32(-32))
-		cr.compare("i64", us.I64, int64(-64))
-		cr.compare("u", us.U, uint(1))
-		cr.compare("u8", us.U8, uint8(8))
-		cr.compare("u16", us.U16, uint16(16))
-		cr.compare("u32", us.U32, uint32(32))
-		cr.compare("u64", us.U64, uint64(64))
-		cr.compare("f32", us.F32, float32(32.32))
-		cr.compare("f64", us.F64, 64.64)
-		cr.compare("ptr", us.Ptr, 42)
-		cr.compare("ptr2", us.Ptr2, 0)
-		cr.compare("array", us.Array, []int{1, 2})
-		cr.compare("slice", us.Slice, []int{3, 4})
-		cr.compare("slice2", us.Slice2, []int{})
-		cr.compare("qs", us.QS, []byte{1, 2, 3})
-		cr.compare("qs2", us.QS2, []int{})
-		cr.compare("ei", us.EI, 33)
-		if err := cr.finish(); err != nil {
-			t.Error(err)
-		}
 	}
 }
 

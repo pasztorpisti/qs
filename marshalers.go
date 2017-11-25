@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 // structMarshaler implements ValuesMarshaler.
@@ -317,6 +318,23 @@ func marshalFloat(v reflect.Value, opts *MarshalOptions) (string, error) {
 	}
 
 	return strconv.FormatFloat(v.Float(), 'f', -1, bitSize), nil
+}
+
+func marshalTime(v reflect.Value, opts *MarshalOptions) (string, error) {
+	t := v.Type()
+	if t != timeType {
+		return "", &wrongTypeError{Actual: t, Expected: timeType}
+	}
+	return v.Interface().(time.Time).Format(time.RFC3339), nil
+}
+
+func marshalURL(v reflect.Value, opts *MarshalOptions) (string, error) {
+	t := v.Type()
+	if t != urlType {
+		return "", &wrongTypeError{Actual: t, Expected: urlType}
+	}
+	u := v.Interface().(url.URL)
+	return u.String(), nil
 }
 
 func marshalWithMarshalQS(v reflect.Value, opts *MarshalOptions) ([]string, error) {

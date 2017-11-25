@@ -3,8 +3,10 @@ package qs
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -21,7 +23,9 @@ var DefaultNameTransform NameTransformFunc = snakeCase
 // MarshalOptions.NameTransformer and UnmarshalOptions.NameTransformer variables.
 type NameTransformFunc func(string) string
 
-var stringType = reflect.TypeOf((*string)(nil)).Elem()
+var stringType = reflect.TypeOf("")
+var timeType = reflect.TypeOf(time.Time{})
+var urlType = reflect.TypeOf(url.URL{})
 
 type parsedTag struct {
 	Name              string
