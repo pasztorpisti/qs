@@ -577,8 +577,8 @@ func TestDefaultOpt(t *testing.T) {
 		err := Unmarshal(&us, "")
 		if err == nil {
 			t.Error("unexpected success")
-		} else if _, ok := err.(ReqError); !ok {
-			t.Errorf("expected a ReqError :: %v", err)
+		} else if _, ok := IsRequiredFieldError(err); !ok {
+			t.Errorf("expected a RequiredFieldError :: %v", err)
 		}
 	}
 }
@@ -838,8 +838,8 @@ func TestDefaultNil(t *testing.T) {
 		err := unmarshaler.Unmarshal(&us, "")
 		if err == nil {
 			t.Error("unexpected success")
-		} else if _, ok := err.(ReqError); !ok {
-			t.Errorf("expected a ReqError :: %v", err)
+		} else if _, ok := IsRequiredFieldError(err); !ok {
+			t.Errorf("expected a RequiredFieldError :: %v", err)
 		}
 	}
 }
@@ -901,8 +901,8 @@ func TestDefaultReq(t *testing.T) {
 		err := unmarshaler.Unmarshal(&us, "")
 		if err == nil {
 			t.Error("unexpected success")
-		} else if _, ok := err.(ReqError); !ok {
-			t.Errorf("expected a ReqError :: %v", err)
+		} else if _, ok := IsRequiredFieldError(err); !ok {
+			t.Errorf("expected a RequiredFieldError :: %v", err)
 		}
 	}
 
@@ -945,8 +945,8 @@ func TestDefaultReq(t *testing.T) {
 		err := unmarshaler.Unmarshal(&us, "")
 		if err == nil {
 			t.Error("unexpected success")
-		} else if _, ok := err.(ReqError); !ok {
-			t.Errorf("expected a ReqError :: %v", err)
+		} else if _, ok := IsRequiredFieldError(err); !ok {
+			t.Errorf("expected a RequiredFieldError :: %v", err)
 		}
 	}
 
@@ -989,8 +989,8 @@ func TestDefaultReq(t *testing.T) {
 		err := unmarshaler.Unmarshal(&us, "")
 		if err == nil {
 			t.Error("unexpected success")
-		} else if _, ok := err.(ReqError); !ok {
-			t.Errorf("expected a ReqError :: %v", err)
+		} else if _, ok := IsRequiredFieldError(err); !ok {
+			t.Errorf("expected a RequiredFieldError :: %v", err)
 		}
 	}
 
@@ -1033,8 +1033,8 @@ func TestDefaultReq(t *testing.T) {
 		err := unmarshaler.Unmarshal(&us, "")
 		if err == nil {
 			t.Error("unexpected success")
-		} else if _, ok := err.(ReqError); !ok {
-			t.Errorf("expected a ReqError :: %v", err)
+		} else if _, ok := IsRequiredFieldError(err); !ok {
+			t.Errorf("expected a RequiredFieldError :: %v", err)
 		}
 	}
 }

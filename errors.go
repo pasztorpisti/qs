@@ -5,12 +5,25 @@ import (
 	"reflect"
 )
 
-// ReqError is returned when a struct field marked with the 'req' option isn't
-// in the unmarshaled url.Values or query string.
-type ReqError string
+// IsRequiredFieldError returns ok==false if the given error wasn't caused by a
+// required field that was missing from the query string.
+// Otherwise it returns the name of the missing required field with ok==true.
+func IsRequiredFieldError(e error) (fieldName string, ok bool) {
+	if re, ok := e.(*reqError); ok {
+		return re.FieldName, true
+	}
+	return "", false
+}
 
-func (e ReqError) Error() string {
-	return string(e)
+// reqError is returned when a struct field marked with the 'req' option isn't
+// in the unmarshaled url.Values or query string.
+type reqError struct {
+	Message   string
+	FieldName string
+}
+
+func (e *reqError) Error() string {
+	return e.Message
 }
 
 type wrongTypeError struct {

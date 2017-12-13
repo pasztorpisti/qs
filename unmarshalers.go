@@ -97,7 +97,10 @@ func (p *structUnmarshaler) UnmarshalValues(v reflect.Value, vs url.Values, opts
 		a, ok := vs[fum.Tag.Name]
 		if !ok {
 			if fum.Tag.UnmarshalPresence == Req {
-				return ReqError(fmt.Sprintf("missing required field %q in struct %v", fum.Tag.Name, t))
+				return &reqError{
+					Message:   fmt.Sprintf("missing required field %q in struct %v", fum.Tag.Name, t),
+					FieldName: fum.Tag.Name,
+				}
 			}
 			if fum.Tag.UnmarshalPresence == Nil {
 				continue
@@ -112,8 +115,12 @@ func (p *structUnmarshaler) UnmarshalValues(v reflect.Value, vs url.Values, opts
 	for _, ef := range p.EmbeddedFields {
 		err := ef.ValuesUnmarshaler.UnmarshalValues(v.Field(ef.FieldIndex), vs, opts)
 		if err != nil {
-			if _, ok := err.(ReqError); ok {
-				return ReqError(fmt.Sprintf("embedded field %q :: %v", t.Field(ef.FieldIndex).Name, err))
+			if _, ok := IsRequiredFieldError(err); ok {
+				name := t.Field(ef.FieldIndex).Name
+				return &reqError{
+					Message:   fmt.Sprintf("embedded field %q :: %v", name, err),
+					FieldName: name,
+				}
 			}
 			return fmt.Errorf("error unmarshaling embedded field %q :: %v", t.Field(ef.FieldIndex).Name, err)
 		}

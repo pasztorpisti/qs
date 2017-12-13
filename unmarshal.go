@@ -24,10 +24,11 @@ const (
 	Opt
 
 	// Nil is the same as Opt except that it doesn't initialise nil pointers
-	// and arrays during unmarshal when they are missing from the query string.
+	// and slices during unmarshal when they are missing from the query string.
 	Nil
 
-	// Req tells the unmarshaler to fail with ReqError if the given field is
+	// Req tells the unmarshaler to fail with an error that can be detected
+	// using qs.IsRequiredFieldError if the given field is
 	// missing from the query string. While this is rather validation than
 	// unmarshaling it is practical to have this in case of simple programs.
 	// If you don't want to mix unmarshaling and validation then you can use the
@@ -96,12 +97,15 @@ var DefaultUnmarshaler = NewUnmarshaler(&UnmarshalOptions{})
 //
 // A struct field tag can optionally contain one of the opt, nil and req options
 // for unmarshaling. If it contains none of these then opt is the default but
-// the default can also be changed by using a custom marshaler. The unmarshal
-// option is used only when the query string doesn't contain a value for the
-// given struct field:
-//  - nil does nothing
-//  - opt is like the nil option except that it initialises nil pointer fields
-//  - req causes the unmarshal operation to fail with ReqError
+// the default can also be changed by using a custom marshaler. The
+// UnmarshalPresence of a field is used only when the query string doesn't
+// contain a value for it:
+//  - nil succeeds and keeps the original field value
+//  - opt succeeds and keeps the original field value but in case of
+//    pointer-like types (pointers, slices) with nil field value it initialises
+//    the field with a newly created object.
+//  - req causes the unmarshal operation to fail with an error that can be
+//    detected using qs.IsRequiredFieldError.
 //
 // When unmarshaling a nil pointer field that is present in the query string
 // the pointer is automatically initialised even if it has the nil option in
