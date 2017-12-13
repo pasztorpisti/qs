@@ -13,9 +13,10 @@ import (
 type UnmarshalPresence int
 
 const (
-	// UPUnspecified can be used as the value of UnmarshalOptions.DefaultUnmarshalPresence
-	// to tell the NewUnmarshaler function to use the value of the global
-	// DefaultUnmarshalPresence variable.
+	// UPUnspecified is the zero value of UnmarshalPresence. In most cases
+	// you will use this implicitly by simply leaving the
+	// UnmarshalOptions.DefaultUnmarshalPresence field uninitialised which results
+	// in using the default UnmarshalPresence which is Opt.
 	UPUnspecified UnmarshalPresence = iota
 
 	// Opt tells the unmarshaler to leave struct fields as they are when they
@@ -56,8 +57,9 @@ func (v UnmarshalPresence) String() string {
 type UnmarshalOptions struct {
 	// NameTransformer is used to transform struct field names into a query
 	// string names when they aren't set explicitly in the struct field tag.
-	// If this field is nil then NewUnmarshaler uses the DefaultNameTransformer
-	// global variable.
+	// If this field is nil then NewUnmarshaler uses a default function that
+	// converts the CamelCase field names to snake_case which is popular
+	// with query strings.
 	NameTransformer NameTransformFunc
 
 	// SliceToString is used by Unmarshaler.Unmarshal when it unmarshals into a
@@ -69,16 +71,23 @@ type UnmarshalOptions struct {
 	// string "count=5&count=6&count=8" then the incoming []string{"5", "6", "8"}
 	// has to be converted into a single string before setting the "Count int"
 	// field.
+	//
+	// If you don't initialise this field then a default function is used that
+	// fails if the input array doesn't contain exactly one item.
+	//
+	// In some cases you might want to provide your own function that is more
+	// forgiving. E.g.: you can provide a function that picks the first or last
+	// item, or concatenates/joins the whole list into a single string.
 	SliceToString func([]string) (string, error)
 
 	// ValuesUnmarshalerFactory is used by QSUnmarshaler to create ValuesUnmarshaler
 	// objects for specific types. If this field is nil then NewUnmarshaler uses
-	// the value of the DefaultValuesUnmarshalerFactory global variable.
+	// a default builtin factory.
 	ValuesUnmarshalerFactory ValuesUnmarshalerFactory
 
 	// UnmarshalerFactory is used by QSUnmarshaler to create Unmarshaler
 	// objects for specific types. If this field is nil then NewUnmarshaler uses
-	// the value of the DefaultUnmarshalerFactory global variable.
+	// a default builtin factory.
 	UnmarshalerFactory UnmarshalerFactory
 
 	// DefaultUnmarshalPresence is used for the unmarshaling of struct fields
@@ -237,7 +246,7 @@ const defaultUnmarshalPresence = Opt
 
 func prepareUnmarshalOptions(opts UnmarshalOptions) *UnmarshalOptions {
 	if opts.NameTransformer == nil {
-		opts.NameTransformer = DefaultNameTransform
+		opts.NameTransformer = snakeCase
 	}
 	if opts.SliceToString == nil {
 		opts.SliceToString = defaultSliceToString

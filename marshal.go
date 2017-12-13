@@ -12,9 +12,10 @@ import (
 type MarshalPresence int
 
 const (
-	// MPUnspecified can be used as the value of MarshalOptions.DefaultMarshalPresence
-	// to tell the NewMarshaler function to use the value of the global
-	// DefaultMarshalPresence variable.
+	// MPUnspecified is the zero value of MarshalPresence. In most cases
+	// you will use this implicitly by simply leaving the
+	// MarshalOptions.DefaultMarshalPresence field uninitialised which results
+	// in using the default MarshalPresence which is KeepEmpty.
 	MPUnspecified MarshalPresence = iota
 
 	// KeepEmpty marshals the values of empty fields into the marshal output.
@@ -29,8 +30,10 @@ func (v MarshalPresence) String() string {
 	case MPUnspecified:
 		return "MPUnspecified"
 	case KeepEmpty:
+		// using lowercase to match the format used in struct tags
 		return "keepempty"
 	case OmitEmpty:
+		// using lowercase to match the format used in struct tags
 		return "omitempty"
 	default:
 		return fmt.Sprintf("MarshalPresence(%v)", int(v))
@@ -41,18 +44,19 @@ func (v MarshalPresence) String() string {
 type MarshalOptions struct {
 	// NameTransformer is used to transform struct field names into a query
 	// string names when they aren't set explicitly in the struct field tag.
-	// If this field is nil then NewMarshaler uses the DefaultNameTransformer
-	// global variable.
+	// If this field is nil then NewMarshaler uses a default function that
+	// converts the CamelCase field names to snake_case which is popular
+	// with query strings.
 	NameTransformer NameTransformFunc
 
 	// ValuesMarshalerFactory is used by QSMarshaler to create ValuesMarshaler
 	// objects for specific types. If this field is nil then NewMarshaler uses
-	// the value of the DefaultValuesMarshalerFactory global variable.
+	// a default builtin factory.
 	ValuesMarshalerFactory ValuesMarshalerFactory
 
 	// MarshalerFactory is used by QSMarshaler to create Marshaler
 	// objects for specific types. If this field is nil then NewMarshaler uses
-	// the value of the DefaultMarshalerFactory global variable.
+	// a default builtin factory.
 	MarshalerFactory MarshalerFactory
 
 	// DefaultMarshalPresence is used for the marshaling of struct fields that
@@ -229,7 +233,7 @@ const defaultMarshalPresence = KeepEmpty
 
 func prepareMarshalOptions(opts MarshalOptions) *MarshalOptions {
 	if opts.NameTransformer == nil {
-		opts.NameTransformer = DefaultNameTransform
+		opts.NameTransformer = snakeCase
 	}
 
 	if opts.ValuesMarshalerFactory == nil {

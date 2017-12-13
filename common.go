@@ -12,11 +12,6 @@ import (
 
 const tagKey = "qs"
 
-// DefaultNameTransform is used by NewMarshaler and NewUnmarshaler when
-// the MarshalOptions.NameTransformer or UnmarshalOptions.NameTransformer
-// field is nil.
-var DefaultNameTransform NameTransformFunc = snakeCase
-
 // A NameTransformFunc is used to derive the query string keys from the field
 // names of the struct.
 // NameTransformFunc is the type of the DefaultNameTransform,
