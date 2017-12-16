@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -164,6 +165,7 @@ func expectValues(values, expected url.Values) error {
 				unexpected = append(unexpected, k)
 			}
 		}
+		sort.Strings(unexpected)
 		return fmt.Errorf("unexpected keys: %v", strings.Join(unexpected, ", "))
 	}
 	for k, v := range expected {
@@ -183,8 +185,8 @@ func expectValues(values, expected url.Values) error {
 	return nil
 }
 
-// TestMarshalTypes tests the marshaling of all supported types.
-func TestMarshalTypes(t *testing.T) {
+// TestMarshalStrings tests the marshaling of all supported strings Marshalers.
+func TestMarshalStrings(t *testing.T) {
 	tm := time.Date(2017, 2, 25, 10, 59, 3, 999, time.UTC)
 	u, err := url.Parse("https://host.uk/path1/path2?key1=val1&key2=val2#fragment")
 	if err != nil {
@@ -249,6 +251,25 @@ func TestMarshalTypes(t *testing.T) {
 		"qs":    {"010203"},
 		"qs2":   {""},
 		"ei":    {"33"},
+	}
+	if err := expectValues(vs, expected); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestMarshalValues(t *testing.T) {
+	type s struct {
+		S string
+	}
+	p := &s{S: "str"}
+	// marshaling a pointer pointer to something that
+	// can be marshaled only by a ValuesMarshaler
+	vs, err := MarshalValues(&p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := url.Values{
+		"s": {"str"},
 	}
 	if err := expectValues(vs, expected); err != nil {
 		t.Error(err)

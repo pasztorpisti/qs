@@ -178,3 +178,36 @@ func (p *mapUnmarshaler) UnmarshalValues(v reflect.Value, vs url.Values, opts *U
 
 	return nil
 }
+
+type ptrValuesUnmarshaler struct {
+	Type            reflect.Type
+	ElemType        reflect.Type
+	ElemUnmarshaler ValuesUnmarshaler
+}
+
+func newPtrValuesUnmarshaler(t reflect.Type, opts *UnmarshalOptions) (ValuesUnmarshaler, error) {
+	if t.Kind() != reflect.Ptr {
+		return nil, &wrongKindError{Expected: reflect.Ptr, Actual: t}
+	}
+	et := t.Elem()
+	eu, err := opts.ValuesUnmarshalerFactory.ValuesUnmarshaler(et, opts)
+	if err != nil {
+		return nil, err
+	}
+	return &ptrValuesUnmarshaler{
+		Type:            t,
+		ElemType:        et,
+		ElemUnmarshaler: eu,
+	}, nil
+}
+
+func (p *ptrValuesUnmarshaler) UnmarshalValues(v reflect.Value, vs url.Values, opts *UnmarshalOptions) error {
+	t := v.Type()
+	if t != p.Type {
+		return &wrongTypeError{Actual: t, Expected: p.Type}
+	}
+	if v.IsNil() {
+		v.Set(reflect.New(p.ElemType))
+	}
+	return p.ElemUnmarshaler.UnmarshalValues(v.Elem(), vs, opts)
+}

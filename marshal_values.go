@@ -193,3 +193,34 @@ func (p *mapMarshaler) MarshalValues(v reflect.Value, opts *MarshalOptions) (url
 	}
 	return vs, nil
 }
+
+type ptrValuesMarshaler struct {
+	Type          reflect.Type
+	ElemMarshaler ValuesMarshaler
+}
+
+func newPtrValuesMarshaler(t reflect.Type, opts *MarshalOptions) (ValuesMarshaler, error) {
+	if t.Kind() != reflect.Ptr {
+		return nil, &wrongKindError{Expected: reflect.Ptr, Actual: t}
+	}
+	et := t.Elem()
+	em, err := opts.ValuesMarshalerFactory.ValuesMarshaler(et, opts)
+	if err != nil {
+		return nil, err
+	}
+	return &ptrValuesMarshaler{
+		Type:          t,
+		ElemMarshaler: em,
+	}, nil
+}
+
+func (p *ptrValuesMarshaler) MarshalValues(v reflect.Value, opts *MarshalOptions) (url.Values, error) {
+	t := v.Type()
+	if t != p.Type {
+		return nil, &wrongTypeError{Actual: t, Expected: p.Type}
+	}
+	if v.IsNil() {
+		return nil, nil
+	}
+	return p.ElemMarshaler.MarshalValues(v.Elem(), opts)
+}
