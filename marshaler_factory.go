@@ -45,6 +45,7 @@ type MarshalQS interface {
 func newValuesMarshalerFactory() ValuesMarshalerFactory {
 	return &valuesMarshalerFactory{
 		KindSubRegistries: map[reflect.Kind]ValuesMarshalerFactory{
+			reflect.Ptr:    valuesMarshalerFactoryFunc(newPtrValuesMarshaler),
 			reflect.Struct: valuesMarshalerFactoryFunc(newStructMarshaler),
 			reflect.Map:    valuesMarshalerFactoryFunc(newMapMarshaler),
 		},

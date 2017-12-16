@@ -267,7 +267,7 @@ func compareValues(value, want interface{}) bool {
 	}
 }
 
-func TestUnmarshalTypes(t *testing.T) {
+func TestUnmarshalStrings(t *testing.T) {
 	queryString := strings.Join([]string{
 		"s=str",
 		"b=true&b2=false",
@@ -323,6 +323,27 @@ func TestUnmarshalTypes(t *testing.T) {
 	cr.compare("ei", us.EI, 33)
 	if err := cr.finish(); err != nil {
 		t.Error(err)
+	}
+}
+
+func TestUnmarshalValues(t *testing.T) {
+	type s struct {
+		S string
+	}
+	var p *s
+	// unmarshaling a pointer pointer to something that
+	// can be unmarshaled only by a ValuesUnmarshaler
+	err := UnmarshalValues(&p, url.Values{
+		"s": {"str"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p == nil {
+		t.Error("nil")
+	}
+	if !compareValues(p.S, "str") {
+		t.Errorf("S == %q, want %q", p.S, "str")
 	}
 }
 

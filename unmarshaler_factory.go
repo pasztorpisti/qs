@@ -54,6 +54,7 @@ type UnmarshalQS interface {
 func newValuesUnmarshalerFactory() ValuesUnmarshalerFactory {
 	return &valuesUnmarshalerFactory{
 		KindSubRegistries: map[reflect.Kind]ValuesUnmarshalerFactory{
+			reflect.Ptr:    valuesUnmarshalerFactoryFunc(newPtrValuesUnmarshaler),
 			reflect.Struct: valuesUnmarshalerFactoryFunc(newStructUnmarshaler),
 			reflect.Map:    valuesUnmarshalerFactoryFunc(newMapUnmarshaler),
 		},
