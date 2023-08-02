@@ -1,6 +1,7 @@
 package qs
 
 import (
+	"encoding"
 	"fmt"
 	"net/url"
 	"reflect"
@@ -155,4 +156,16 @@ func marshalWithMarshalQS(v reflect.Value, opts *MarshalOptions) ([]string, erro
 		return nil, fmt.Errorf("expected a type that implements MarshalQS, got %v", v.Type())
 	}
 	return marshalQS.MarshalQS(opts)
+}
+
+func marshalWithTextMarshaler(v reflect.Value, opts *MarshalOptions) ([]string, error) {
+	marshaler, ok := v.Interface().(encoding.TextMarshaler)
+	if !ok {
+		return nil, fmt.Errorf("expected a type that implements encoding.TextMarshaler, got %v", v.Type())
+	}
+	text, err := marshaler.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return []string{string(text)}, nil
 }

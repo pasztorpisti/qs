@@ -1,6 +1,7 @@
 package qs
 
 import (
+	"encoding"
 	"net/url"
 	"reflect"
 )
@@ -106,6 +107,7 @@ type marshalerFactory struct {
 }
 
 var marshalQSInterfaceType = reflect.TypeOf((*MarshalQS)(nil)).Elem()
+var textMarshalerInterfaceType = reflect.TypeOf((*encoding.TextMarshaler)(nil)).Elem()
 
 func (p *marshalerFactory) Marshaler(t reflect.Type, opts *MarshalOptions) (Marshaler, error) {
 	if marshaler, ok := p.Types[t]; ok {
@@ -114,6 +116,10 @@ func (p *marshalerFactory) Marshaler(t reflect.Type, opts *MarshalOptions) (Mars
 
 	if t.Implements(marshalQSInterfaceType) {
 		return marshalerFunc(marshalWithMarshalQS), nil
+	}
+
+	if t.Implements(textMarshalerInterfaceType) {
+		return marshalerFunc(marshalWithTextMarshaler), nil
 	}
 
 	k := t.Kind()
