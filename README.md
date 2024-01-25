@@ -115,5 +115,5 @@ contains more detailed documentation with working examples.
 [doc]: https://pkg.go.dev/github.com/pamburus/qs
 [ci-img]: https://github.com/pamburus/qs/actions/workflows/ci.yml/badge.svg
 [ci]: https://github.com/pamburus/qs/actions/workflows/ci.yml
-[cov-img]: https://codecov.io/gh/pamburus/qs/branch/main/graph/badge.svg
+[cov-img]: https://codecov.io/gh/pamburus/qs/graph/badge.svg?token=WBQLIRQGBO
 [cov]: https://codecov.io/gh/pamburus/qs
