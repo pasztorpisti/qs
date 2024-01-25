@@ -1,4 +1,7 @@
-# qs [![build-status](https://travis-ci.org/pasztorpisti/qs.svg?branch=master)](https://travis-ci.org/pasztorpisti/qs) [![godoc](https://godoc.org/github.com/pasztorpisti/qs?status.svg)](https://godoc.org/github.com/pasztorpisti/qs)
+# qs [![GoDoc][doc-img]][doc] [![Build Status][ci-img]][ci] [![Coverage Status][cov-img]][cov]
+
+This package is a fork of [github.com/pasztorpisti/qs](https://github.com/pasztorpisti/qs/) and contains 
+several additional fixes and features that are not present in the upstream.
 
 The `qs` package can marshal and unmarshal structs into/from url query strings.
 The interface of `qs` is very similar to that of some standard marshaler
@@ -38,7 +41,7 @@ Example:
 package main
 
 import "fmt"
-import "github.com/pasztorpisti/qs"
+import "github.com/pamburus/qs"
 
 type Query struct {
 	Search     string
@@ -71,9 +74,9 @@ func main() {
 - Support for primitive types (`bool`, `int`, etc...), pointers, slices, arrays,
   maps, structs, `time.Time` and `url.URL`.
 - A custom type can implement the `MarshalQS` and/or `UnmarshalQS` interfaces
-  to [handle its own marshaling/unmarshaling](https://godoc.org/github.com/pasztorpisti/qs/#example-package--SelfMarshalingType).
+  to [handle its own marshaling/unmarshaling](https://godoc.org/github.com/pamburus/qs/#example-package--SelfMarshalingType).
 - The marshaler and unmarshaler are modular and
-  [can be extended to support new types](https://godoc.org/github.com/pasztorpisti/qs/#example-package--CustomMarshalerFactory).
+  [can be extended to support new types](https://godoc.org/github.com/pamburus/qs/#example-package--CustomMarshalerFactory).
   This makes it possible to do several tricks. One of them is being able to
   override existing type marshalers (e.g.: the `[]byte` array marshaler).
 - It can tell whether a type is marshallable before actually marshaling an
@@ -91,7 +94,7 @@ func main() {
   - When a struct field tag specifies none of the  `keepempty` and `omitempty`
     options the marshaler uses `keepempty` by default. By creating a custom
     marshaler you can
-    [change the default to `omitempty`](https://godoc.org/github.com/pasztorpisti/qs/#example-package--DefaultOmitEmpty).
+    [change the default to `omitempty`](https://godoc.org/github.com/pamburus/qs/#example-package--DefaultOmitEmpty).
   - When a struct field tag doesn't specify any of the `opt`, `nil`, `req`
     options the unmarshaler uses `opt` by default. By creating a custom
     unmarshaler you can change this default.
@@ -104,5 +107,13 @@ func main() {
 
 # Detailed Documentation
 
-The [godoc of the qs package](https://godoc.org/github.com/pasztorpisti/qs/)
+The [godoc of the qs package](https://godoc.org/github.com/pamburus/qs/)
 contains more detailed documentation with working examples.
+
+
+[doc-img]: https://pkg.go.dev/badge/github.com/pamburus/qs
+[doc]: https://pkg.go.dev/github.com/pamburus/qs
+[ci-img]: https://github.com/pamburus/qs/actions/workflows/ci.yml/badge.svg
+[ci]: https://github.com/pamburus/qs/actions/workflows/ci.yml
+[cov-img]: https://codecov.io/gh/pamburus/qs/branch/main/graph/badge.svg
+[cov]: https://codecov.io/gh/pamburus/qs

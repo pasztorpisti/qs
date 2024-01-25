@@ -49,5 +49,13 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - name: go test
-        run: go test -race ./...
+      - name: Test
+        run: go test -race -coverprofile=cover.out -coverpkg=./... ./...
+
+      - name: Collect coverage
+        run: go tool cover -html=cover.out -o cover.html
+
+      - name: Upload coverage to codecov.io
+        uses: codecov/codecov-action@v3
+        env: 
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
