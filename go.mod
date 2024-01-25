@@ -1,3 +1,3 @@
-module github.com/pasztorpisti/qs
+module github.com/pamburus/qs
 
 go 1.20

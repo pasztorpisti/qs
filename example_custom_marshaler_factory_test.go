@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/pasztorpisti/qs"
+	"github.com/pamburus/qs"
 )
 
 // This example shows how to create QSMarshaler and QSUnmarshaler objects
