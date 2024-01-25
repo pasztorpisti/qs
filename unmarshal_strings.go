@@ -36,6 +36,9 @@ func (p *ptrUnmarshaler) Unmarshal(v reflect.Value, a []string, opts *UnmarshalO
 	if t != p.Type {
 		return &wrongTypeError{Actual: t, Expected: p.Type}
 	}
+	if a == nil {
+		return nil
+	}
 	if v.IsNil() {
 		v.Set(reflect.New(p.ElemType))
 	}
