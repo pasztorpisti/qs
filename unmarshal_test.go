@@ -1205,3 +1205,59 @@ func TestCheckUnmarshalType(t *testing.T) {
 		t.Error("unexpected success")
 	}
 }
+
+func TestUnmarshalSliceReuse(t *testing.T) {
+	testCases := []struct {
+		name    string
+		initial []int
+		values  []string
+		want    []int
+	}{
+		{"nil", nil, []string{"3", "4"}, []int{3, 4}},
+		{"grow", []int{9}, []string{"3", "4"}, []int{3, 4}},
+		{"grow within capacity", make([]int, 0, 3), []string{"3", "4"}, []int{3, 4}},
+		{"shrink", []int{9, 8, 7}, []string{"3"}, []int{3}},
+		{"empty", []int{9, 8}, []string{}, []int{}},
+		{"same length", []int{9, 8}, []string{"3", "4"}, []int{3, 4}},
+		{"nil values", []int{9, 8}, nil, []int{9, 8}},
+		{"nil values into nil slice", nil, nil, []int{}},
+	}
+	for _, tc := range testCases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					t.Errorf("%s: panic: %v", tc.name, r)
+				}
+			}()
+			query := struct{ Items []int }{tc.initial}
+			if err := UnmarshalValues(&query, url.Values{"items": tc.values}); err != nil {
+				t.Errorf("%s: %v", tc.name, err)
+				return
+			}
+			if !reflect.DeepEqual(query.Items, tc.want) {
+				t.Errorf("%s: got %#v, want %#v", tc.name, query.Items, tc.want)
+			}
+		}()
+	}
+}
+
+func TestUnmarshalSliceRepeatedQueries(t *testing.T) {
+	query := struct{ Items []int }{[]int{9}}
+	testCases := []struct {
+		query string
+		want  []int
+	}{
+		{"items=1&items=2", []int{1, 2}},
+		{"items=3", []int{3}},
+		{"items=4&items=5&items=6", []int{4, 5, 6}},
+		{"", []int{4, 5, 6}},
+	}
+	for _, tc := range testCases {
+		if err := Unmarshal(&query, tc.query); err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(query.Items, tc.want) {
+			t.Errorf("query %q: got %#v, want %#v", tc.query, query.Items, tc.want)
+		}
+	}
+}
