@@ -84,9 +84,7 @@ func (o *fakeUnmarshalerFactory) Unmarshaler(t reflect.Type, opts *UnmarshalOpti
 	return o.u, o.err
 }
 
-type fakeUnmarshaler struct {
-	dummy int
-}
+type fakeUnmarshaler struct{}
 
 func (o *fakeUnmarshaler) Unmarshal(v reflect.Value, a []string, opts *UnmarshalOptions) error {
 	return nil

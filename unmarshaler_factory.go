@@ -1,6 +1,7 @@
 package qs
 
 import (
+	"encoding"
 	"net/url"
 	"reflect"
 )
@@ -114,6 +115,7 @@ type unmarshalerFactory struct {
 }
 
 var unmarshalQSInterfaceType = reflect.TypeOf((*UnmarshalQS)(nil)).Elem()
+var textUnmarshalerInterfaceType = reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()
 
 func (p *unmarshalerFactory) Unmarshaler(t reflect.Type, opts *UnmarshalOptions) (Unmarshaler, error) {
 	if unmarshaler, ok := p.Types[t]; ok {
@@ -122,6 +124,10 @@ func (p *unmarshalerFactory) Unmarshaler(t reflect.Type, opts *UnmarshalOptions)
 
 	if reflect.PtrTo(t).Implements(unmarshalQSInterfaceType) {
 		return unmarshalerFunc(unmarshalWithUnmarshalQS), nil
+	}
+
+	if reflect.PtrTo(t).Implements(textUnmarshalerInterfaceType) {
+		return unmarshalerFunc(unmarshalWithTextUnmarshaler), nil
 	}
 
 	k := t.Kind()

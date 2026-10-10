@@ -1,6 +1,7 @@
 package qs
 
 import (
+	"encoding"
 	"fmt"
 	"net/url"
 	"reflect"
@@ -34,6 +35,9 @@ func (p *ptrUnmarshaler) Unmarshal(v reflect.Value, a []string, opts *UnmarshalO
 	t := v.Type()
 	if t != p.Type {
 		return &wrongTypeError{Actual: t, Expected: p.Type}
+	}
+	if a == nil {
+		return nil
 	}
 	if v.IsNil() {
 		v.Set(reflect.New(p.ElemType))
@@ -264,4 +268,19 @@ func unmarshalWithUnmarshalQS(v reflect.Value, a []string, opts *UnmarshalOption
 		return fmt.Errorf("expected a type that implements UnmarshalQS, got %v", v.Type())
 	}
 	return unmarshalQS.UnmarshalQS(a, opts)
+}
+
+func unmarshalWithTextUnmarshaler(v reflect.Value, a []string, opts *UnmarshalOptions) error {
+	if !v.CanAddr() {
+		return fmt.Errorf("expected and addressable value, got %v", v)
+	}
+	unmarshaler, ok := v.Addr().Interface().(encoding.TextUnmarshaler)
+	if !ok {
+		return fmt.Errorf("expected a type that implements encoding.TextUnmarshaler, got %v", v.Type())
+	}
+	text, err := opts.SliceToString(a)
+	if err != nil {
+		return err
+	}
+	return unmarshaler.UnmarshalText([]byte(text))
 }

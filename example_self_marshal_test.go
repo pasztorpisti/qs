@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/pasztorpisti/qs"
+	"github.com/pamburus/qs"
 )
 
 // This example shows how to implement the MarshalQS and UnmarshalQS interfaces
