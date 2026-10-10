@@ -110,8 +110,10 @@ func (p *sliceUnmarshaler) Unmarshal(v reflect.Value, a []string, opts *Unmarsha
 		return &wrongTypeError{Actual: t, Expected: p.Type}
 	}
 
-	if v.IsNil() {
+	if v.IsNil() || v.Cap() < len(a) {
 		v.Set(reflect.MakeSlice(t, len(a), len(a)))
+	} else if a != nil {
+		v.SetLen(len(a))
 	}
 
 	for i := range a {
